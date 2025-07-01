@@ -27,10 +27,15 @@ app.post('/send-email', upload.single('file'), (req, res) => {
 
   // הנתיב המלא של הקובץ שהועלה
   const attachmentPath = req.file ? path.resolve(req.file.path) : '';
+  const attachmentName = req.file ? req.file.originalname : ''; // זה חייב להיות ברור
 
   const promises = to.map(email => {
     return new Promise((resolve, reject) => {
-      const command = `powershell -File CreateOutlookDraft.ps1 -to "${email}" -subject "${subject}" -body "${body}"${attachmentPath ? ` -attachmentPath "${attachmentPath}"` : ''}`;
+      const command = `powershell -File CreateOutlookDraft.ps1 `
+        + `-to "${email}" `
+        + `-subject "${subject}" `
+        + `-body "${body}"`
+        + (attachmentPath ? ` -attachmentPath "${attachmentPath}" -attachmentName "${attachmentName}"` : '');
 
       exec(command, (error, stdout, stderr) => {
         if (error) {

@@ -23,8 +23,9 @@ const MailForm = () => {
         formData.append('subject', subject);
         formData.append('body', body);
         if (file) {
-          formData.append('file', file);
+          formData.append('file', file, file.name); // שליחת שם ברור וברירת מחדל
         }
+        
 
         const response = await fetch('http://localhost:3001/send-email', {
           method: 'POST',
@@ -43,14 +44,7 @@ const MailForm = () => {
     }
   };
 
-  const toBase64 = (file) =>
-    new Promise((resolve, reject) => {
-      const reader = new FileReader();
-      reader.onload = () => resolve(btoa(reader.result));
-      reader.onerror = reject;
-      reader.readAsBinaryString(file);
-    });
-
+ 
   return (
     <Box
       sx={{
@@ -88,14 +82,25 @@ const MailForm = () => {
             rows={4}
             fullWidth
           />
-          <Button variant="outlined" component="label">
-            העלאת קובץ קורות חיים
-            <input
-              type="file"
-              hidden
-              onChange={e => setFile(e.target.files[0])}
-            />
-          </Button>
+   <Button variant="outlined" component="label">
+  העלאת קובץ קורות חיים
+  <input
+    type="file"
+    hidden
+    onChange={e => setFile(e.target.files[0])}
+  />
+</Button>
+
+{file && (
+  <Typography
+    variant="body2"
+    color="textSecondary"
+    sx={{ mt: 1 }} // רווח מעל
+  >
+    קובץ שנבחר: {file.name}
+  </Typography>
+)}
+
           <Button
             variant="contained"
             onClick={handleSend}
